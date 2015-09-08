@@ -1,0 +1,25 @@
+Estab has many plates.
+
+
+user may rate many plates
+user may rate many estabs
+
+user - estabratingconnection - estab
+                             - rating details
+
+user makes a rating for an establishment
+user id and estab id stored in table
+user rating for that estab stored in a different table.
+
+rating table could have:
+
+|rating id| user id| estab id| description| score|
+
+but then this negates the connection - unless remove user and estab ids
+and add the connecting id.
+
+
+Simplest scenario is user rating a plate.
+
+user rates plate =>
+insert into plate rating user id, plate id, score, description

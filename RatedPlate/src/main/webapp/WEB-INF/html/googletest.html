@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+    </style>
+
+    <!--Google APIS and key from account-->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyxqI0D5cXEYPF6KJtT4E0KCOtowSs4oQ"></script>
+    <!--Places Library-->
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=places"></script>
+    <!--jquery-->
+    <script src="../../assets/js/jquery.js"></script>
+
+
+    <script>
+        function handle_errors(error)
+        {
+            switch(error.code)
+            {
+                case error.PERMISSION_DENIED: alert("user did not share geolocation data");
+                    break;
+                case error.POSITION_UNAVAILABLE: alert("could not detect current position");
+                    break;
+                case error.TIMEOUT: alert("retrieving position timed out");
+                    break;
+                default: alert("unknown error");
+                    break;
+            }
+        }
+
+    </script>
+    <script type="text/javascript">
+
+        var map;
+        var myLocation;
+
+        function performSearch() {
+            var request = {
+                bounds: map.getBounds(),
+                location : {lat: myLocation.lat(), long: myLocation.lng()},
+                radius : '150000',
+                types : ['airport', 'bar']
+            };
+            service.radarSearch(request, callback);
+        }
+
+        function callback(results, status) {
+            if (status != google.maps.places.PlacesServiceStatus.OK) {
+                alert(status);
+                return;
+            }
+            for (var i = 0, result; result = results[i]; i++) {
+                var img_p = "../assets/images/properties/p1.jpg";
+                var icon_villa = "../assets/images/coffee_32x32.png";
+                var icon_hotel = "../assets/images/cake_32x32.png";
+                //var place = results[i].place;
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: result.geometry.location,
+                    place : {
+                        placeId : results[i].place_id,
+                        location :  results[i].geometry.location
+                    },
+
+                    photo : results[i].photos,
+                    title: results[i].place_id + ' : ' + results[i].geometry.location,
+                    events:{
+                        click: function(){
+                            $(this).map(
+
+                                    map.setZoom(8),
+                                    map.setCenter(marker.getPosition())
+                                    );
+                        }
+
+                    }
+
+
+                   //icon: "/assets/images/cake_32x32.png"
+                    //icon : results[i].photos[i].getUrl({'maxWidth': 35, 'maxHeight': 35})
+                });
+            }
+        };
+
+
+        function getLocation(){
+            {
+                if (navigator.geolocation)
+                {
+                    var options = {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    };
+                    navigator.geolocation.getCurrentPosition( success, error,options);
+                }
+            }
+        }
+
+        function error(e) {
+            console.log("error code:" + e.code + 'message: ' + e.message );
+        }
+
+        function success(position) {
+            var lat = position.coords.latitude;
+            var lng =  position.coords.longitude;
+            myLocation =   new google.maps.LatLng(lat, lng);
+
+            var mapOptions = {
+                center: new google.maps.LatLng(myLocation.lat(),myLocation.lng()),
+                zoom: 15
+                //mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+
+            map = new google.maps.Map(document.getElementById("map-canvas"),
+                    mapOptions);
+
+            infoWindow = new google.maps.InfoWindow();
+            service = new google.maps.places.PlacesService(map);//usong radar stylr
+
+            google.maps.event.addListenerOnce(map, 'bounds_changed', performSearch);
+
+
+            var marker = new google.maps.Marker({
+                position: myLocation,
+                map: map,
+                title:"you are here"
+            });
+
+        }
+        google.maps.event.addDomListener(window, 'load', getLocation() );
+
+
+    </script>
+
+</head>
+<body>
+<p id="startLat"></p>
+<p id="startLon"></p>
+
+<div>
+    <button id="btnInit" >Find my location</button>
+</div>
+<div id="map-canvas"></div>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="RatedPlate:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="RatedPlate.war">
+      <element id="artifact" artifact-name="RatedPlate:war exploded" />
+    </root>
+  </artifact>
+</component>
